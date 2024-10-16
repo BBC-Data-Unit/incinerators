@@ -4,7 +4,7 @@ In October 2024 we [published analysis revealing](https://www.bbc.co.uk/news/art
 
 Scientists warned it was a “disaster for the climate” - and some called for a ban on new incinerators.
 
-A [website breaking down the figures for over 200 authorities](https://hospitalbuildings.github.io/site2/index.html) was created to make it easier for reporters to see figures in their area and how those had changed over the period covered, and put it into regional context.
+A [website breaking down the figures for over 200 authorities](https://hospitalbuildings.github.io/site2/index.html) was created to make it easier for reporters to see figures in their area and how those had changed over the period covered, and put it into regional context. A [pack with all the information for reporters can be found here](https://github.com/BBC-Data-Unit/incinerators/blob/main/SDU_The%20rise%20in%20incineration%20across%20the%20UK.pdf)
 
 ## Methodology
 
@@ -31,6 +31,7 @@ Methodological support was provided by Francesco Pomponi, professor of sustainab
 * Environment Agency: [Incinerator Annual Monitoring Reporting](https://www.data.gov.uk/dataset/0de19ba3-9c2f-417c-b092-4a6baaf9744d/incinerator-annual-monitoring-reporting)
 * Environment Agency: [Pollution Inventory](https://www.data.gov.uk/dataset/cfd94301-a2f2-48a2-9915-e477ca6d8b7e/pollution-inventory)
 * Waste by authority, 2014/15 and 2022/23: [XLSX file](https://github.com/BBC-Data-Unit/incinerators/blob/main/data/Incinerators%20for%20sharing%20-%20PARAMETERISATION%20VERSION.xlsx)
+* FOI responses from waste authorities: [XLSX file](https://github.com/BBC-Data-Unit/incinerators/blob/main/data/incineration%20FOI.xlsx) - the [FOI request can be found here](https://github.com/BBC-Data-Unit/incinerators/blob/main/data/Incinerator%20FOI.docx)
 
 ## Code and scripts
 
