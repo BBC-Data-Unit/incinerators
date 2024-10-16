@@ -41,7 +41,10 @@ The website for the project was generated in R using a process called *parameter
 * R notebook: [template for authority webpage](https://github.com/BBC-Data-Unit/incinerators/blob/main/code/01templateBYLA.Rmd) which inserts data into a template script, generates an interactive table for all authorities in the region, and a chart for the authority
 * R notebook: [render markdown files](https://github.com/BBC-Data-Unit/incinerators/blob/main/code/02render.Rmd) from that template for each authority
 * R notebook: [render HTML files](https://github.com/BBC-Data-Unit/incinerators/blob/main/code/03renderhtml.Rmd) from the markdown files
+* R notebook: [index page](https://github.com/BBC-Data-Unit/incinerators/blob/main/code/index.Rmd) to render the index page
 * R notebook: ['clean' HTML files](https://github.com/BBC-Data-Unit/incinerators/blob/main/code/04cleaning.Rmd) to fix bugs such as redundant HTML and non-working menus, and split the menu
+
+In addition, an R notebook was used to [combine incinerator data with data on deprivation](https://github.com/BBC-Data-Unit/incinerators/blob/main/code/incineratorsIMD.Rmd) and create a flow chart to show the data processing.
 
 ## Partner usage and other coverage
 
