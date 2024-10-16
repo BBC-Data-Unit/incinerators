@@ -43,5 +43,9 @@ The website for the project was generated in R using a process called *parameter
 * R notebook: [render HTML files](https://github.com/BBC-Data-Unit/incinerators/blob/main/code/03renderhtml.Rmd) from the markdown files
 * R notebook: ['clean' HTML files](https://github.com/BBC-Data-Unit/incinerators/blob/main/code/04cleaning.Rmd) to fix bugs such as redundant HTML and non-working menus, and split the menu
 
-## Partner usage
+## Partner usage and other coverage
+
+* AOL: [Waste incineration jumps 65% since 2014 - BBC data](https://www.aol.com/waste-incineration-jumps-65-since-192039930.html)
+* ENDS Report: [Waste industry responds to BBC claims that EfW is UK’s ‘dirtiest form of power’](https://www.endsreport.com/article/1892343/waste-industry-responds-bbc-claims-efw-uks-dirtiest-form-power)
+* Sheffield Star: [Pollution concerns over high proportion of waste Sheffield Council sends to incinerators](https://www.thestar.co.uk/news/environment/pollution-concerns-over-high-proportion-of-waste-sheffield-council-sends-to-incinerators-4824881)
 
