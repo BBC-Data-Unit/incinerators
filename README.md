@@ -33,5 +33,15 @@ Methodological support was provided by Francesco Pomponi, professor of sustainab
 
 ## Code and scripts
 
+The website for the project was generated in R using a process called *parameterisation*.
+
+* Files for the website can be found in the [website branch of this repo](https://github.com/BBC-Data-Unit/incinerators/tree/website)
+* R notebook: [import and clean data](https://github.com/BBC-Data-Unit/incinerators/blob/main/code/00reshape.Rmd) from the Google Sheet version for partners - which has two header rows - for use in R
+* R script used in the notebook above: [clean the first two rows where data has headers across two rows](https://github.com/BBC-Data-Unit/incinerators/blob/main/code/clean2rows.R)
+* R notebook: [template for authority webpage](https://github.com/BBC-Data-Unit/incinerators/blob/main/code/01templateBYLA.Rmd) which inserts data into a template script, generates an interactive table for all authorities in the region, and a chart for the authority
+* R notebook: [render markdown files](https://github.com/BBC-Data-Unit/incinerators/blob/main/code/02render.Rmd) from that template for each authority
+* R notebook: [render HTML files](https://github.com/BBC-Data-Unit/incinerators/blob/main/code/03renderhtml.Rmd) from the markdown files
+* R notebook: ['clean' HTML files](https://github.com/BBC-Data-Unit/incinerators/blob/main/code/04cleaning.Rmd) to fix bugs such as redundant HTML and non-working menus, and split the menu
+
 ## Partner usage
 
