@@ -1,0 +1,320 @@
+---
+title: |
+  ![](https://raw.githubusercontent.com/sduiopc/test1/branch1/LNP%20Header-01.jpg){align=right width=40%}
+output: 
+  html_document:
+    includes:
+       in_header: analyticsscript.html
+    self_contained: false
+    lib_dir: site/libs
+
+params:
+  #try Warwickshire for a clawback yes and odd authority
+  #or Barnsley for an NA on clawback
+  #South Tyneside
+  #Dorset and Somerset removed
+  #Bath and North East Somerset has NA in FOI response
+  #Doncaster has no contract
+  #Camden is good for waste authority vs authority
+  #Aberdeen City for Scotland
+  #SKIP BOURNEMOUTH AND ADD NOTE
+  la: "Norfolk"
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F,
+                      warning = F,
+                      message = F)
+```
+
+```{r import libraries}
+library(tidyverse)
+library(DT)
+library(stringr)
+library(ggplot2)
+```
+
+```{r import name variations}
+#the lookup sheet to convert the LA name to others
+#the POSS DEF LIST sheet
+lookupcsv <- "https://docs.google.com/spreadsheets/d/1vwLItvXToSttFaqaT4EkXpVryR58O9coeVxtskB-X38/pub?gid=1756379641&single=true&output=csv"
+#import as data frame
+lookupdf <- readr::read_csv(lookupcsv)
+
+#filter to the rows matching the LA name 
+thisladf <- dplyr::filter(lookupdf, 
+                             `LA NAME (cleaned)` == params$la)
+
+#grab the name used in the waste data
+waname <- thisladf$`WA name`[1]
+#grab the name used in the FOI
+foilaname <- thisladf$`FOI NAME`[1]
+#grab whether the waste authority data is the partnership
+waispartner <- thisladf$WAispartnership[1]
+```
+
+
+```{r import data, message=FALSE, warning=FALSE}
+#THIS CODE IS RUN OUTSIDE OF TEMPLATE TO OPTIMISE
+
+#this pulls the Google sheet 'Incinerators for sharing - PARAMETERISATION VERSION'
+#ukcsv = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR2NjrqjUq1QCEURshBt9Id0KYPSrUI8RvL_Ux312-J1nuKJ9WfWtD-EInSE4jIKVgrhKpAJLOfEyDx/pub?gid=683697027&single=true&output=csv"
+#import the custom function stored in an R script
+#source("clean2rows.R")
+#use that function to import and clean the data
+#reshapeddf <- clean2rows(ukcsv)
+reshapeddf <- readr::read_csv("reshapeddf.csv")
+
+#this pulls 'incineration FOI'
+foicsv <- "https://docs.google.com/spreadsheets/d/1w7ov7bV65I9sFAEaDTj7_rxNKvqk2c1vJ2JaG7tAFYg/pub?gid=49668443&single=true&output=csv"
+foidf <- readr::read_csv(foicsv)
+```
+
+```{r filter to this LA}
+#store any partnership name
+partnershipname <- thisladf$`Partnership where applicable`
+#set a blank string which will be changed if...
+partnerstring1 <- ""
+partnerstring2 <- ""
+
+#if a partner name is used for the data
+if(waispartner == TRUE){
+  #set a string we will use
+  partnerstring1 <- paste0("The waste authority for **",params$la,"** is ",partnershipname,". ")
+} else if (!is.na(partnershipname)){ #...if that name isn't null
+  #set a string we will use
+  partnerstring2 <- paste0("The waste authority for **",params$la,"** is ",partnershipname,". ")
+}
+
+#create a filtered dataset for this LA
+thistrustdf <- dplyr::filter(reshapeddf, 
+                             `Waste authority` == waname)
+
+#turn off scientific notation
+options(scipen = 999)
+
+#store this region too
+thisregion <- thistrustdf$`Region`[1]
+
+#if the region is Scotland...
+earliestyr <- "2015"
+latestyr <- "2023"
+if (thisregion == "Scotland"){
+  latestyr <- "2022"
+  earliestyr <- "2014"
+}
+
+#convert cols to numeric
+for(i in colnames(thistrustdf)[4:17]){
+  thistrustdf[[i]] <- as.numeric(thistrustdf[[i]])
+}
+
+percRecyc15 <- round(as.numeric(thistrustdf$`2014-15 Proportion of waste recycled`)*100, digits = 1)
+percLandf15 <- round((thistrustdf$`2014-15 Proportion of waste landfilled`)*100, digits = 1)
+percIncin15 <- round(thistrustdf$`2014-15 Proportion of waste incinerated with energy recovery`*100, digits = 1)
+
+#For some authorities there is an NA in the 2015 column so this gives us a sentence saying 'an unknown %' in those cases
+if(is.na(percIncin15)){
+  percIncin15 <- "an unknown "
+}
+
+percRecyc23 <- round(thistrustdf$`2022-23 Proportion of waste recycled`*100, digits = 1)
+percLandf23 <- round(thistrustdf$`2022-23 Proportion of waste landfilled`*100, digits = 1)
+percIncin23 <- round(thistrustdf$`2022-23 Proportion of waste incinerated with energy recovery`*100, digits = 1)
+
+change15to23 <- tolower(thistrustdf$`How have things changed since 2014-15? Has recycling increased or decreased?`)
+percChange <- round(as.numeric(thistrustdf$`How have things changed since 2014-15? Difference in recycling`) * 100, digits = 1)
+if (is.na(percChange)){
+  percChange <- "unknown"
+} else if (percChange < 0){
+  percChange <- -percChange
+}
+
+#set a string to points unless
+pcpts <- "points"
+#unless it's just one point
+if (percChange == 1 | percChange == -1){
+  pcpts <- "point"
+}
+
+change15to23inc <- tolower(thistrustdf$`How have things changed since 2014-15? Has incineration increased?`)
+percChangeInc <- round(as.numeric(thistrustdf$`How have things changed since 2014-15? Difference in incineration`) * 100, digits = 1)
+
+if (is.na(percChangeInc)){
+  percChangeInc <- "unknown"
+} else if (percChangeInc < 0){
+  percChangeInc <- -percChangeInc
+}
+```
+
+```{r filter FOI df - and strings}
+contract_string <- "No data is available on contracts for this authority."
+
+#only fetch FOI data if the LA is in the FOI
+if(foilaname != 'NOT IN FOI'){
+  #create a filtered dataset for this LA
+  foidf_thisla <- dplyr::filter(foidf, 
+                               `Council` == foilaname)
+  #years left string - store the value
+  yrsleft <- foidf_thisla$`Time left on contract`
+  company <- foidf_thisla$`Company clean`
+  #create an empty string in case there's no data
+  yrsleftstring <- ""
+  #if there is some data
+  if(!is.na(yrsleft)){
+    yrsleftstring <- paste0("There are currently ",
+                           yrsleft,
+                           " years left on a contract with ", 
+                            company,
+                            ". ")
+  }
+  contractvalue <- foidf_thisla$`Q5: contract value (£m)`
+  contractvaluetext <- ""
+  if(!is.na(contractvalue)){
+    contractvaluetext <- paste0("The total contract value is £",
+                               contractvalue,
+                               "m. ")
+  }
+  clawback <- tolower(foidf_thisla$`Q3: Clawback arrangements? (YES/NO)`)
+  clawbackdetails <- foidf_thisla$`Q3(b) Clawback details`
+  #set the clawback text as empty unless...
+  clawbacktext <- ""
+    if(is.na(clawback)){
+      clawbacktext <- ""
+    } else if (clawback == "yes"){
+      clawbacktext <- paste('The contract has a clawback arrangement: "',clawbackdetails,'"', sep = "")
+    }
+  #replace the string 
+  contract_string <- paste0(yrsleftstring,
+                            contractvaluetext,
+                            clawbacktext)
+}
+
+
+#create a string for the incineration stat
+incinstring <- "There are no figures for changes in incineration."
+
+if(change15to23inc != "change"){
+  incinstring <- paste0("By ",latestyr," **incineration had ",change15to23inc,"d by ", percChangeInc," percentage points to ", percIncin23,"%**.")
+}
+
+```
+
+
+# Recycling has `r change15to23`d `r percChange` percentage `r pcpts` in the waste authority for `r params$la`
+
+### *Strictly embargoed 0:00 GMT, Tuesday, 15 October 2024*
+
+`r partnerstring1`Back in `r earliestyr` `r waname` recycled `r percRecyc15`% of its waste, landfilled `r percLandf15`%, and incinerated `r percIncin15`%. 
+
+`r incinstring`
+
+**Recycling `r change15to23`d** over the same period by `r percChange` percentage `r pcpts` to `r percRecyc23`%. In `r latestyr` `r percLandf23`% of waste was landfilled.
+
+`r partnerstring2``r contract_string`
+
+
+*Notes:* 
+
+1. *Figures do not always add up to 100% as there is a fourth 'other' category.*
+2. *In some cases figures total over 100% as it may include waste from the previous year.* 
+3. *Rounding may also lead to some percentage changes being slightly higher or lower than the difference between the two figures: in this situation please [check the full spreadsheet](https://docs.google.com/spreadsheets/d/1G8TZH_RGfhr5Dwyx608pn-dTWCnh6uXmtkkycqJTZm0/edit?usp=sharing) for more detailed figures.*
+4. *Some annual returns in Scotland are incomplete comparing 2014 and 2022. This is because, at some authorities, data on incineration was not collected back in 2014. Other authorities have also not submitted an annual return for 2022 in the Scottish Environmental Protection Agency (SEPA) data.*
+
+
+## Explore authorities in `r thistrustdf$Region`
+
+The interactive table below shows how waste has been dealt with in authorities in the region between 2014/15 and 2022/23. 
+
+
+```{r table}
+#filter to this LA's region
+df_for_table <- reshapeddf %>% filter(Region == thistrustdf$Region)
+
+df_for_table <- df_for_table[, c(1, 6,9,13,16,17)]
+
+#only do this table if it's not Scotland
+#if (thistrustdf$Region != "Scotland"){
+  #convert to numbers
+  df_for_table$`2014-15 Tonnes incinerated (with energy recovery)` <- as.numeric(df_for_table$`2014-15 Tonnes incinerated (with energy recovery)`)
+  #and divide by 100 where we need to format as %
+  df_for_table$`2014-15 Proportion of waste incinerated with energy recovery` <- as.numeric(df_for_table$`2014-15 Proportion of waste incinerated with energy recovery`)
+  df_for_table$`2022-23 Tonnes incinerated (with energy recovery)` <- as.numeric(df_for_table$`2022-23 Tonnes incinerated (with energy recovery)`)
+  df_for_table$`2022-23 Proportion of waste incinerated with energy recovery` <- as.numeric(df_for_table$`2022-23 Proportion of waste incinerated with energy recovery`)
+  #df_for_table$`How have things changed since 2014-15? Difference in incineration between 14-15 and 22-23` <- as.numeric(df_for_table$`How have things changed since 2014-15? Difference in incineration between 14-15 and 22-23`)
+  
+  #rename columns 
+  #Create the datatable. Add a caption if you want
+  DT::datatable(df_for_table,
+               style = 'bootstrap',
+               caption = '', 
+               filter = 'top',
+               options = list(pageLength = 10, scrollX=TRUE,
+                               autoWidth = TRUE,
+                               order = list(1, 'asc') #order by col 1
+                                ), escape = F
+               ) %>% 
+    formatCurrency(columns = c(2, 4), currency = "", digits = 0) %>% 
+    formatPercentage(columns = c(3, 5), digits = 0) %>%
+    formatPercentage(columns = 6, digits = 0)
+#}
+```
+## Visualised: how waste processing changed between 2014/15 and 2022/23
+
+```{r vis}
+#remove the total cols
+thistrustdf <- thistrustdf[, c(1,7,8,9,14,15,16)]
+
+#fix cols not stored as numbers
+thistrustdf$`2014-15 Proportion of waste incinerated with energy recovery` <- as.numeric(thistrustdf$`2014-15 Proportion of waste incinerated with energy recovery`)
+thistrustdf$`2022-23 Proportion of waste incinerated with energy recovery` <- as.numeric(thistrustdf$`2022-23 Proportion of waste incinerated with energy recovery`)
+thistrustdf$`2014-15 Proportion of waste landfilled`<- as.numeric(thistrustdf$`2014-15 Proportion of waste landfilled`)
+thistrustdf$`2022-23 Proportion of waste landfilled`<- as.numeric(thistrustdf$`2022-23 Proportion of waste landfilled`)
+thistrustdf$`2014-15 Proportion of waste recycled` <- as.numeric(thistrustdf$`2014-15 Proportion of waste recycled`)
+thistrustdf$`2022-23 Proportion of waste recycled` <- as.numeric(thistrustdf$`2022-23 Proportion of waste recycled`)
+
+
+# Select the columns we're interested in
+df_long <- thistrustdf %>%
+  select(`2014-15 Proportion of waste landfilled`,
+         `2014-15 Proportion of waste recycled`,
+         `2014-15 Proportion of waste incinerated with energy recovery`,
+         `2022-23 Proportion of waste landfilled`,
+         `2022-23 Proportion of waste recycled`,
+         `2022-23 Proportion of waste incinerated with energy recovery`) %>%
+  pivot_longer(cols = everything(),
+               names_to = "Category",
+               values_to = "Proportion")
+
+# Ensure that the Proportion column is numeric
+#replace % to avoid NA
+#divide by 100 to display as a proper %
+df_long$Proportion <- as.numeric(gsub("%","",df_long$Proportion)) #/100
+
+
+# Create a new column to extract year and waste type information
+df_long <- df_long %>%
+  mutate(Year = ifelse(grepl("2014-15", Category), "2014-15", "2022-23"),
+         WasteType = case_when(
+           grepl("landfilled", Category) ~ "Landfilled",
+           grepl("recycled", Category) ~ "Recycled",
+           grepl("incinerated", Category) ~ "Incinerated with Energy Recovery"
+         ))
+
+# Now plot the data using ggplot
+ggplot(df_long, aes(x = Year, y = Proportion, group = WasteType, color = WasteType)) +
+  geom_line(aes(linetype = WasteType), size = 1.2) + 
+  geom_point(size = 4) +
+  labs(title = "Change in Waste Proportions between 2014-15 and 2022-23",
+       x = "Year",
+       y = "Proportion of Waste (%)") +
+  theme_minimal() +
+  theme(legend.title = element_blank()) +
+  scale_y_continuous(labels = scales::percent_format())
+
+```
+
+
+
+

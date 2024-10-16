@@ -1,0 +1,45 @@
+---
+title: |
+  ![](https://raw.githubusercontent.com/sduiopc/test1/branch1/LNP%20Header-01.jpg){align=right width=40%}
+output: 
+  html_document:
+    includes:
+       in_header: analyticsscript.html
+    self_contained: false
+    lib_dir: site/libs
+
+params:
+  #try Warwickshire for a clawback yes and odd authority
+  #or Barnsley for an NA on clawback
+  #South Tyneside
+  #Dorset and Somerset removed
+  #Bath and North East Somerset has NA in FOI response
+  #Doncaster has no contract
+  #Camden is good for waste authority vs authority
+  #Aberdeen City for Scotland
+  #SKIP BOURNEMOUTH AND ADD NOTE
+  la: "Clackmannanshire"
+---
+
+# RUN THIS CODE BEFORE 01 AND RENDER
+
+
+```{r import libraries}
+library(tidyverse)
+library(DT)
+library(stringr)
+library(ggplot2)
+```
+
+```{r import data, message=FALSE, warning=FALSE}
+#BETTER TO RESHAPE OUTSIDE OF TEMPLATE TO OPTIMISE
+
+#this pulls the Google sheet 'Incinerators for sharing - PARAMETERISATION VERSION'
+ukcsv = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR2NjrqjUq1QCEURshBt9Id0KYPSrUI8RvL_Ux312-J1nuKJ9WfWtD-EInSE4jIKVgrhKpAJLOfEyDx/pub?gid=683697027&single=true&output=csv"
+#import the custom function stored in an R script
+source("clean2rows.R")
+#use that function to import and clean the data
+reshapeddf <- clean2rows(ukcsv)
+#export - without an index
+write.csv(reshapeddf,"reshapeddf.csv", row.names = FALSE)
+```

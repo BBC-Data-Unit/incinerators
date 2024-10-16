@@ -1,0 +1,47 @@
+---
+title: "02render"
+output: html_document
+date: "2024-01-02"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Rendering the markdown files
+
+Allow around 20 minutes for these files to be generated. 
+
+```{r import data and clean}
+#the POSS DEF LIST sheet
+lookupcsv <- "https://docs.google.com/spreadsheets/d/1vwLItvXToSttFaqaT4EkXpVryR58O9coeVxtskB-X38/pub?gid=1756379641&single=true&output=csv"
+#import as data frame
+lookupdf <- readr::read_csv(lookupcsv)
+
+#create a list of orgs
+las <- unique(lookupdf$`LA NAME (cleaned)`)
+
+#remove Bournemouth
+las <- las[las != "Bournemouth, Christchurch and Poole"]
+#remove Somerset
+las <- las[las != "Somerset"]
+#remove West Northants
+las <- las[las != "Northamptonshire"]
+las <- las[las != "West Northamptonshire"]
+las <- las[las != "North Northamptonshire"]
+
+```
+
+This code will throw an error if the 'site' folder hasn't been created earlier by knitting the 01 template file. 
+
+```{r generate md files}
+#store the location of the template 
+paramsfile <- "01templateBYLA.Rmd"
+
+#loop through all regions 
+for (t in las) {
+  print(t)
+  rmarkdown::render(paramsfile, params = list(la = t), output_file = paste(sep="",'site/',stringr::str_replace_all(stringr::str_replace_all(t," ","-"),"'",""),'.md'),
+    envir = parent.frame())
+}
+```

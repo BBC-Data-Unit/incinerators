@@ -1,0 +1,715 @@
+---
+title: "05cleaning"
+output: html_document
+date: "2023-07-05"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Clean the HTML outputs
+
+Some pages have some HTML which needs to be removed because it is being rendered as paragraph text: `<p>&lt;!DOCTYPE html&gt;</p>`.
+
+```{r list html files}
+#get the names of all the html files
+htmlfiles <- list.files("site/_site")
+htmlfiles[6]
+#read in the first one
+testfile <- readr::read_lines(paste0("site/_site/",htmlfiles[6]))
+#create an empty list
+tfvec <- c()
+#loop through all the lines
+for(i in testfile){
+  #check if the line matches the string
+  tfmatch <- i == "<p>&lt;!DOCTYPE html&gt;</p>"
+  #store the True/False value in a vector
+  tfvec <- c(tfvec,tfmatch)
+}
+#find the index of the line with that text
+doctypeline <- which(tfvec)
+print(doctypeline)
+#show the  line
+#testfile[612]
+testfile[doctypeline]
+#replace it
+testfile[doctypeline] <- "<p></p>"
+testfile[doctypeline]
+#save it as a HTML file to check
+write(x = testfile, file=paste0("site/_site/","testfile.html"))
+#remove the variable
+rm(testfile)
+```
+
+
+Can we do this by just testing each line?
+
+```{r create cleaning function for DOCTYPE}
+#define a function which takes one argument: htmlfile
+cleandoctype <- function(htmlfile){
+  #read in that file
+  thisfile <- readr::read_lines(paste0(htmlfile))
+  #store the number of lines
+  filelen <- length(thisfile)
+ #loop through all the lines after the first one
+    for(linenum in seq(2,length(thisfile))){
+      #print(thisfile[linenum])
+      if (thisfile[linenum] == "<p>&lt;!DOCTYPE html&gt;</p>"){
+        print("HIT!")
+        print(linenum)
+        #replace specified string
+        thisfile[linenum] <- "<p></p>"
+      }
+    }
+  #return the cleaned version to whatever called this function
+  thisfile
+  }
+```
+
+```{r test function}
+#run function on one of the files and store in tempfile
+tempfile <- cleandoctype(paste0("site/_site/",htmlfiles[10]))
+#write the results over the original
+write(x = tempfile, file=paste0("site/_site/",htmlfiles[10]))
+```
+
+```{r run function on all files}
+#loop through the files
+for (i in htmlfiles){
+  print(i)
+  #extract the last 5 chars
+  filetype <- substring(i,nchar(i)-4,nchar(i))
+  #check if they end in .html
+  ishtml <- filetype == ".html"
+  print(filetype)
+  #this should be TRUE or FALSE
+  #print(ishtml)
+  #if it's a html file
+  if(ishtml){
+    #run function on one of the files and store in tempfile
+    tempfile <- cleandoctype(paste0("site/_site/",i))
+    #write the results over the original
+    write(x = tempfile, file=paste0("site/_site/",i))
+  }
+}
+```
+
+
+## Fix the menu
+
+We need to ensure this navbar works.
+
+The problem is caused by a duplicate `<html>` and `<head>` tag. 
+
+This and other duplicate lines of code run from lines 613-757. But some of that code helps the table to work, so removing it all would cause new problems.
+
+We *can* just remove `<html>` and `<head>` and the closing tags for those.
+
+`<html>` and `<head>` are on 613 and 614 while `</head>` and `<body>` are on line 756 and 757. There's also an extra `</body>` and `</html>` on lines 868-9.
+
+From 615-620 are some meta tags and a title tag we can also remove. 
+
+There are style tags which also can be removed without affecting functionality. But we leave those lines as it's not worth the time of writing code to remove them.
+
+We can make the dropdowns functional by adding this code, but it breaks their appearance. 
+
+
+```
+<!-- CSS file -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+
+<!-- JavaScript files -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>
+```
+
+Some trial and error (trying each line on its own) helps us fix it: the 4.5 JS file is the one that fixes the behaviour of the dropdown, while the CSS file is the one that breaks the appearance. 
+
+So we just need to replace the JS link. This is on lines 20 and 647.
+
+We create a very similar function to before.
+
+```{r create function to clean JS}
+#define a function which takes one argument: htmlfile
+cleanbootstrap <- function(htmlfile){
+  #read in that file
+  thisfile <- readr::read_lines(paste0(htmlfile))
+  #store the number of lines
+  filelen <- length(thisfile)
+ #loop through all the lines after the first one
+    for(linenum in seq(2,length(thisfile))){
+      #print(thisfile[linenum])
+      if (thisfile[linenum] == '<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>'){
+        print("HIT!")
+        print(linenum)
+        #replace specified string
+        thisfile[linenum] <- '<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>'
+      }
+    }
+  #return the cleaned version to whatever called this function
+  thisfile
+  }
+```
+
+```{r test JS function}
+#run function on one of the files and store in tempfile
+tempfile <- cleanbootstrap(paste0("site/_site/",htmlfiles[4]))
+#write the results over the original
+write(x = tempfile, file=paste0("site/_site/",htmlfiles[4]))
+```
+
+```{r run JS function on all files}
+#loop through the files
+for (i in htmlfiles){
+  print(i)
+  #extract the last 5 chars
+  filetype <- substring(i,nchar(i)-4,nchar(i))
+  #check if they end in .html
+  ishtml <- filetype == ".html"
+  print(filetype)
+  #this should be TRUE or FALSE
+  #print(ishtml)
+  #if it's a html file
+  if(ishtml){
+    #run function on one of the files and store in tempfile
+    tempfile <- cleanbootstrap(paste0("site/_site/",i))
+    #write the results over the original
+    write(x = tempfile, file=paste0("site/_site/",i))
+  }
+}
+```
+
+## Splitting the menu
+
+We have too many options on the menu - it runs off the page. So we need to split it into multiple menus.
+
+The menu begins with the HTML code `<ul class="dropdown-menu" role="menu">` on line 251 or thereabouts.
+
+This problem was tackled before at https://github.com/BBC-Data-Unit/child-speech/blob/main/parameterisation/03renderandclean.Rmd
+
+We need to split the menu first at     
+
+```
+<li>
+      <a href="Brent.html">Brent</a>
+```
+
+*(Note: previously we split it lower but testing revealed that smaller screen resolutions would need it split higher)*
+
+Again let's create a function that will do this for us. 
+
+```{r create function for splitting the navbar}
+#define a function which takes one argument: htmlfile
+splitmenu <- function(htmlfile, matchstring,menuletters){
+  #read in that file
+  thisfile <- readr::read_lines(paste0(htmlfile))
+  #store the number of lines
+  filelen <- length(thisfile)
+ #loop through all the lines after the first one
+    for(linenum in seq(2,length(thisfile))){
+      #print(thisfile[linenum])
+      if (thisfile[linenum] == matchstring){
+        print("HIT!")
+        print(linenum)
+        #replace the line before this one with
+        thisfile[linenum-1] <- paste0('</ul></li></ul><ul class="nav navbar-nav navbar-right"></ul><ul class="nav navbar-nav"><li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">',menuletters,'<span class="caret"></span></a><ul class="dropdown-menu" role="menu"><li>')
+      }
+    }
+  #return the cleaned version to whatever called this function
+  thisfile
+  }
+```
+
+```{r split the menu test}
+#store a testindex so we don't have to change them all
+testindex <- 6
+
+#store the first split
+firstsplit <- '      <a href="Buckinghamshire.html">Buckinghamshire</a>'
+#store the menu letters
+firstletters <- 'Bu-C'
+#run the function on that file with that string
+tempfile <- splitmenu(paste0("site/_site/",htmlfiles[testindex]),
+                      firstsplit,
+                      firstletters)
+#write the results over the original
+write(x = tempfile, file=paste0("site/_site/",htmlfiles[testindex]))
+
+#repeat for the next split
+secondsplit <- '      <a href="Darlington.html">Darlington</a>'
+
+#store the menu letters
+secondletters <- 'D'
+#run the function on that file with that string
+tempfile <- splitmenu(paste0("site/_site/",htmlfiles[testindex]),
+                      secondsplit,
+                      secondletters)
+#write the results over the original
+write(x = tempfile, file=paste0("site/_site/",htmlfiles[testindex]))
+
+
+#insert an extra split for E-F
+splitEF <- '      <a href="Ealing.html">Ealing</a>'
+#store the menu letters
+lettersEF <- 'E-F'
+#run the function on that file with that string
+tempfile <- splitmenu(paste0("site/_site/",htmlfiles[testindex]),
+                      splitEF,
+                      lettersEF)
+#write the results over the original
+write(x = tempfile, file=paste0("site/_site/",htmlfiles[testindex]))
+
+#repeat for the next split
+thirdsplit <- '      <a href="Gateshead.html">Gateshead</a>'
+#store the menu letters
+thirdletters <- 'G-H'
+#run the function on that file with that string
+tempfile <- splitmenu(paste0("site/_site/",htmlfiles[testindex]),
+                      thirdsplit,
+                      thirdletters)
+#write the results over the original
+write(x = tempfile, file=paste0("site/_site/",htmlfiles[testindex]))
+
+#and the next split
+fourthsplit <- '      <a href="Inverclyde.html">Inverclyde</a>'
+#store the menu letters
+fourthletters <- 'I-L'
+#run the function on that file with that string
+tempfile <- splitmenu(paste0("site/_site/",htmlfiles[testindex]),
+                      fourthsplit,
+                      fourthletters)
+#write the results over the original
+write(x = tempfile, file=paste0("site/_site/",htmlfiles[testindex]))
+
+#and the 5th split
+fifthsplit <- '      <a href="Manchester.html">Manchester</a>'
+#store the menu letters
+fifthletters <- 'M-Ne'
+#run the function on that file with that string
+tempfile <- splitmenu(paste0("site/_site/",htmlfiles[testindex]),
+                      fifthsplit,
+                      fifthletters)
+#write the results over the original
+write(x = tempfile, file=paste0("site/_site/",htmlfiles[testindex]))
+
+#and the 6th split
+sixthsplit <- '      <a href="Norfolk.html">Norfolk</a>'
+#store the menu letters
+sixthletters <- 'No-O'
+#run the function on that file with that string
+tempfile <- splitmenu(paste0("site/_site/",htmlfiles[testindex]),
+                      sixthsplit,
+                      sixthletters)
+#write the results over the original
+write(x = tempfile, file=paste0("site/_site/",htmlfiles[testindex]))
+
+#and the 6th split
+splitp <- '      <a href="Pembrokeshire.html">Pembrokeshire</a>'
+#store the menu letters
+lettersp <- 'P'
+#run the function on that file with that string
+tempfile <- splitmenu(paste0("site/_site/",htmlfiles[testindex]),
+                      splitp,
+                      lettersp)
+#write the results over the original
+write(x = tempfile, file=paste0("site/_site/",htmlfiles[testindex]))
+
+#and the next split
+split7 <- '      <a href="Reading.html">Reading</a>'
+#store the menu letters
+letters7 <- 'R-Sl'
+#run the function on that file with that string
+tempfile <- splitmenu(paste0("site/_site/",htmlfiles[testindex]),
+                      split7,
+                      letters7)
+#write the results over the original
+write(x = tempfile, file=paste0("site/_site/",htmlfiles[testindex]))
+
+#and the next split
+split8 <- '      <a href="Solihull.html">Solihull</a>'
+#store the menu letters
+letters8 <- 'So-Sw'
+#run the function on that file with that string
+tempfile <- splitmenu(paste0("site/_site/",htmlfiles[testindex]),
+                      split8,
+                      letters8)
+#write the results over the original
+write(x = tempfile, file=paste0("site/_site/",htmlfiles[testindex]))
+
+#and the next split
+split9 <- '      <a href="Tameside.html">Tameside</a>'
+#store the menu letters
+letters9 <- 'T-V'
+#run the function on that file with that string
+tempfile <- splitmenu(paste0("site/_site/",htmlfiles[testindex]),
+                      split9,
+                      letters9)
+#write the results over the original
+write(x = tempfile, file=paste0("site/_site/",htmlfiles[testindex]))
+
+#and the last split
+splitw <- '      <a href="Wakefield.html">Wakefield</a>'
+#store the menu letters
+lettersw <- 'W-We'
+#run the function on that file with that string
+tempfile <- splitmenu(paste0("site/_site/",htmlfiles[testindex]),
+                      splitw,
+                      lettersw)
+
+
+#write the results over the original
+write(x = tempfile, file=paste0("site/_site/",htmlfiles[testindex]))
+
+#and the last split
+lastsplit <- '      <a href="Wigan.html">Wigan</a>'
+#store the menu letters
+lastletters <- 'Wi-Z'
+#run the function on that file with that string
+tempfile <- splitmenu(paste0("site/_site/",htmlfiles[testindex]),
+                      lastsplit,
+                      lastletters)
+
+
+#write the results over the original
+write(x = tempfile, file=paste0("site/_site/",htmlfiles[testindex]))
+```
+
+This next bit could be more elegant - we need to rethink the function so it takes the actual file rather than the filename, as at the moment we need to write it 7 times in order to run the function 7 times. 
+
+```{r apply to all files}
+#loop through the files
+for (i in htmlfiles){
+  print(i)
+  #extract the last 5 chars
+  filetype <- substring(i,nchar(i)-4,nchar(i))
+  #check if they end in .html
+  ishtml <- filetype == ".html"
+  print(filetype)
+  #this should be TRUE or FALSE
+  #print(ishtml)
+  #if it's a html file
+  if(ishtml){
+    
+    #run function on one of the files and store in tempfile
+    tempfile <- splitmenu(paste0("site/_site/",i),
+                      firstsplit,
+                      firstletters)
+    #write the results over the original
+    write(x = tempfile, file=paste0("site/_site/",i))
+    
+    #run function on one of the files and store in tempfile
+    tempfile <- splitmenu(paste0("site/_site/",i),
+                      secondsplit,
+                      secondletters)
+    #write the results over the original
+    write(x = tempfile, file=paste0("site/_site/",i))
+    
+    #run function on one of the files and store in tempfile
+    tempfile <- splitmenu(paste0("site/_site/",i),
+                      splitEF,
+                      lettersEF)
+    #write the results over the original
+    write(x = tempfile, file=paste0("site/_site/",i))
+    
+    #run function on one of the files and store in tempfile
+    tempfile <- splitmenu(paste0("site/_site/",i),
+                      thirdsplit,
+                      thirdletters)
+    #write the results over the original
+    write(x = tempfile, file=paste0("site/_site/",i))
+    
+    #run function on one of the files and store in tempfile
+    tempfile <- splitmenu(paste0("site/_site/",i),
+                      fourthsplit,
+                      fourthletters)
+    #write the results over the original
+    write(x = tempfile, file=paste0("site/_site/",i))
+    
+    #run function on one of the files and store in tempfile
+    tempfile <- splitmenu(paste0("site/_site/",i),
+                      fifthsplit,
+                      fifthletters)
+    #write the results over the original
+    write(x = tempfile, file=paste0("site/_site/",i))
+    
+    #run function on one of the files and store in tempfile
+    tempfile <- splitmenu(paste0("site/_site/",i),
+                      sixthsplit,
+                      sixthletters)
+    #write the results over the original
+    write(x = tempfile, file=paste0("site/_site/",i))
+    
+    tempfile <- splitmenu(paste0("site/_site/",htmlfiles[testindex]),
+                      splitp,
+                      lettersp)
+    #write the results over the original
+    write(x = tempfile, file=paste0("site/_site/",htmlfiles[testindex]))
+    
+    #run function on one of the files and store in tempfile
+    tempfile <- splitmenu(paste0("site/_site/",i),
+                      split7,
+                      letters7)
+    #write the results over the original
+    write(x = tempfile, file=paste0("site/_site/",i))
+    
+    #run function on one of the files and store in tempfile
+    tempfile <- splitmenu(paste0("site/_site/",i),
+                      split8,
+                      letters8)
+    #write the results over the original
+    write(x = tempfile, file=paste0("site/_site/",i))
+    
+    #run the function on that file with that string
+    tempfile <- splitmenu(paste0("site/_site/",i),
+                          split9,
+                          letters9)
+    #write the results over the original
+    write(x = tempfile, file=paste0("site/_site/",i))
+    
+    #run function on one of the files and store in tempfile
+    tempfile <- splitmenu(paste0("site/_site/",i),
+                      lastsplit,
+                      lastletters)
+    #write the results over the original
+    write(x = tempfile, file=paste0("site/_site/",i))
+  }
+}
+```
+
+
+## Changing the 'Authorities' menu to 'A-Br'
+
+We also need to change the first menu so it now reads A-Br. The HTML in question is on lines 246-7:
+
+```
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Trusts
+```
+
+We can create a similar function to before - the main difference being that it changes the line itself rather than the one before. 
+
+
+```{r create function for changing menu name}
+#define a function which takes one argument: htmlfile
+trustmenuAD <- function(htmlfile, matchstring,menuletters){
+  #read in that file
+  thisfile <- readr::read_lines(paste0(htmlfile))
+  #store the number of lines
+  filelen <- length(thisfile)
+ #loop through all the lines after the first one
+    for(linenum in seq(2,length(thisfile))){
+      #print(thisfile[linenum])
+      if (thisfile[linenum] == matchstring){
+        print("HIT!")
+        print(linenum)
+        #replace the line with
+        thisfile[linenum] <- paste0(matchstring,menuletters)
+      }
+    }
+  #return the cleaned version to whatever called this function
+  thisfile
+  }
+```
+
+Now we test that on one file.
+
+```{r test menu function}
+#store the first split
+asplit <- '    Authorities'
+#store the menu letters
+aletters <- ' A-Br'
+#run the function on that file with that string
+tempfile <- trustmenuAD(paste0("site/_site/",htmlfiles[8]),
+                      asplit,
+                      aletters)
+#write the results over the original
+write(x = tempfile, file=paste0("site/_site/",htmlfiles[8]))
+```
+
+And once we're happy, run it on all .html files in the folder.
+
+```{r apply trustmenuAD to all files}
+#loop through the files
+for (i in htmlfiles){
+  print(i)
+  #extract the last 5 chars
+  filetype <- substring(i,nchar(i)-4,nchar(i))
+  #check if they end in .html
+  ishtml <- filetype == ".html"
+  print(filetype)
+  #this should be TRUE or FALSE
+  #print(ishtml)
+  #if it's a html file
+  if(ishtml){
+    
+    #run function on one of the files and store in tempfile
+    tempfile <- trustmenuAD(paste0("site/_site/",i),
+                      asplit,
+                      aletters)
+    #write the results over the original
+    write(x = tempfile, file=paste0("site/_site/",i))
+  }
+}
+```
+
+## Add the menu to the index.html file 
+
+Now all the trust pages are fixed, but our index page doesn't have the menu across the top. 
+
+We can fix that by copying the HTML for the menu across.
+
+First we need to render this, and then move it.
+
+```{r render and move index}
+#store the location of the template 
+rmarkdown::render("index.Rmd")
+#move the file
+file.copy(from = "index.html",
+          to   = "site/_site/index.html")
+```
+
+Note: this doesn't always work, so you can manually render, then copy and paste the new file across to the _site folder.
+
+Now let's copy some HTML from one of the other files.
+
+```{r copy across navbar html to index}
+#read in a HTML file
+parampage <- readr::read_lines(paste0("site/_site/",htmlfiles[30]))
+#store the string we'll look for
+findstring <- '<div id="header">'
+
+#store the number of lines
+filelen <- length(parampage)
+#loop through all the lines after the first one
+for(linenum in seq(2,length(parampage))){
+  #if the line matches our target, store it
+  if (parampage[linenum] == findstring){
+    print("HIT!")
+    print(linenum)
+    #store the line number - this will end up being the last one matched
+    lastlinenum <- linenum
+    }
+}
+
+#loop from that last matching line onwards
+for (linenum in seq(lastlinenum,length(parampage))){
+  #delete that line (replace with empty string)
+  parampage[linenum] <- ""
+}
+
+#now we need to grab the lines from the index.html page
+#read in a HTML file
+indexpage <- readr::read_lines("site/_site/index.html")
+
+#store the number of lines
+filelen <- length(indexpage)
+#loop through all the lines after the first one
+for(linenum in seq(2,length(indexpage))){
+  #if the line matches our target, store it
+  if (indexpage[linenum] == findstring){
+    print("HIT!")
+    print(linenum)
+    #store the line number - this will end up being the last one matched
+    lastindexmatch <- linenum
+    }
+}
+
+#we know we will need to loop the number of lines we need to transfer across
+#so calculate how many lines that is 
+#by subtracting the matched line number from the length of the doc
+totallines <- length(indexpage) - lastindexmatch 
+#loop through the numbers 0 to that number
+for (i in seq(0,totallines)){
+  #add that number to the respective line numbers in each doc
+  copylinenum <- lastindexmatch+i
+  pastelinenum <- lastlinenum+i
+  parampage[pastelinenum] <- indexpage[copylinenum]
+}
+
+#write the results over the original
+write(x = parampage, file="site/_site/index.html")
+```
+## Change the title tag
+
+At the moment the `<title>` tag of the home page shows the name of the trust that was used for testing. We need to change that.
+
+```{r change title tag}
+parampage[14] <- "<title>The Rise in Incineration</title>" # replace the line number at that position with the text
+
+#write the results over the original
+write(x = parampage, file="site/_site/index.html")
+```
+
+### Individual edits
+
+Some pages need specific edits making: Angus, Devon, Kirklees.
+
+```{r check index of specific edit files}
+htmlfiles[6]
+htmlfiles[96]
+htmlfiles[186]
+#write(x = tempfile, file=paste0("site/_site/",htmlfiles[8]))
+```
+
+```{r Angus edits}
+#store the string we need to insert
+angusstring <- 'Baldovie Ltd.  Contract value is not given but is linked to the annual spending of the council. In 22/23 the spend was 2.165 million in 21/22 it was 1.05 million. The contract'
+
+#read in the Angus file to a temporary file
+thisfile <- readr::read_lines(paste0(paste0("site/_site/",htmlfiles[6])))
+#replace line 1061 with the new one
+thisfile[1061] <- angusstring
+#check the whole passage works
+thisfile[1060:1066]
+
+#write the results over the original
+write(x = thisfile, file=paste0("site/_site/",htmlfiles[6]))
+```
+
+
+
+```{r Devon edits}
+#store the string we need to insert
+devonstring1 <- "In Devon, there are three separate contracts to deal with the county's waste. The South West Devon Waste Partnership (SWDWP) is a joint venture between Plymouth City Council, Devon County Council and Torbay Council. It has a 25-year residual waste contract with MVV Environment Devonport Ltd, which commenced in 2014. The overall estimated worth of the contract is £436million."
+
+
+
+#read in the Devon file to a temporary file
+devonfile <- readr::read_lines(paste0(paste0("site/_site/",htmlfiles[96])))
+#replace line 1060 with the new one
+devonfile[1060] <- devonstring1
+devonfile[1061] <- "</p>"
+devonfile[1062] <- "<p>The county also has a contract to dispose of waste from Exeter and the surrounding area at the Exeter Energy Recovery Facility (ERF) – this is a contract with Viridor Exeter Waste Services Ltd. It has an operational term of 30 years from 2014 onwards. The overall estimated worth of the contract is circa £240million."
+devonfile[1063] <- "</p>"
+devonfile[1064] <- "<p>There is a third contract covering North Devon and Torridge with Suez Recycling and Recovery Limited.  This contract for provision of a transfer station and disposal of residual waste runs from 2019 to 2029. Its estimated value is £55million."
+#check the whole passage works
+devonfile[1065] <- "</p>"
+devonfile[1066] <- '<p>Devon\'s response to our FOI request with more details on their arrangements <a href="https://www.devon.gov.uk/accesstoinformation/information_request/waste-sent-for-incineration/">can be read in full here</a>.</p>'
+devonfile[1060:1066]
+
+#write the results over the original
+write(x = devonfile, file=paste0("site/_site/",htmlfiles[96]))
+```
+
+```{r Kirklees edits}
+#store the string we need to insert
+kirkleesstring <- 'There is currently 1 year left on a contract with Suez. The FOI response reads: "As incineration is part of the integrated waste disposal contract we are unable to specify the value. The contract start date was 02/04/1998 and is due to end 01/04/2025 after a 2 year extension. The contract was signed as part of a PFI deal."'
+
+#read in the Angus file to a temporary file
+kirkfile <- readr::read_lines(paste0(paste0("site/_site/",htmlfiles[186])))
+#replace line 1061 with the new one
+kirkfile[1060] <- kirkleesstring
+kirkfile[1061] <- ""
+#check the whole passage works
+kirkfile[1060:1066]
+
+#write the results over the original
+write(x = kirkfile, file=paste0("site/_site/",htmlfiles[186]))
+```
+
+
+
+### Add the chart to the index
+
+We can also embed a chart into the same file using the same approach. See the hospital buildings notebooks for more.
