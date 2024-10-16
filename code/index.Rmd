@@ -1,0 +1,43 @@
+---
+title: |
+  ![](https://raw.githubusercontent.com/sduiopc/test1/branch1/LNP%20Header-01.jpg){align=right width=40%}  
+  "The Rise in Incineration"
+output: 
+  html_document:
+    self_contained: false
+    lib_dir: site/libs
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F,
+                      warning = F,
+                      message = F)
+```
+
+
+```{r import libraries}
+library(tidyverse)
+library(DT)
+#library(stringr)
+#library(ggplot2)
+```
+
+### *Strictly embargoed 0:00 GMT, Tuesday, 15 October 2024*
+
+## What’s the story
+
+**Councils across the UK are bound into decades worth of contracts with companies to burn black bag waste - even though experts now say incineration is a “disaster” for the environment.**
+
+Over the past decade, local authorities have greatly reduced the amount of household waste  they send to landfill. 
+
+But the BBC Climate and Science team's investigation alongside the Shared Data Unit shows the alternative many have found may not be the green solution it has been sold as. 
+
+Instead, councils are burning millions of tonnes more than they did a decade ago in large “energy from waste” facilities - most often situated in the poorest parts of the UK.
+
+These incinerators generate electricity for the National Grid, but are pumping out levels of harmful greenhouse gases at a rising rate.
+
+This website enables you to see how incineration levels have changed at your authority comparing the 2014-15 financial year, when statistics first became available, and 2022-23, the most recent available. The most recent year available in Scotland was the 2022 calender year.
+
+By selecting the waste authority from the drop down menus above - you can also get details of the authority’s contract term and value.
+
+Please note some areas have joint waste authorities covering multiple council areas, such as the Merseyside Waste Disposal Authority. Mostly, the waste authority for your area will be the upper-tier council.   

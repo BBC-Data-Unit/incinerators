@@ -1,0 +1,261 @@
+---
+title: "incinerators"
+author: "paul bradshaw"
+date: "2024-06-19"
+output: html_document
+---
+
+# Analysing data on incinerators
+
+Data has been downloaded from https://wastedataflow.org/reports/default.aspx with the following selections:
+
+* Authority: England
+* Periods: Apr 22 - Mar 23
+* Questions: Q100
+
+## Install packages
+
+We are going to use [the `dtrackr` package](https://terminological.github.io/dtrackr/) to "creating a step-by-step summary of the important parts of the wrangling as it actually happened to the dataframe, right into dataframe metadata itself."
+
+```{r packages}
+#In general use dtrackr is expected to be installed alongside the tidyverse set of packages. It is recommended to install tidyverse first.
+library(tidyverse)
+#install dtrackr
+install.packages("dtrackr")
+#this is already installed but needs updating
+install.packages("rlang")
+#activate dtrackr 
+library(dtrackr)
+library(readxl)
+```
+
+
+## Import data
+
+The downloaded data is in the same folder as this notebook.
+
+```{r import data}
+#skip the first row, headings are on row 2
+df <- read_excel("WasteDataFlow Question Data.xlsx", 
+                 skip = 1)
+```
+
+We also clean the postcodes so they are all upper case
+
+```{r clean postcodes}
+df$FacilityPostCode <- str_to_upper(df$FacilityPostCode)
+```
+
+
+## Filter to incineration
+
+```{r filter}
+
+df_filtered <- df %>% 
+  track(
+    .headline = "WasteDataFlow:",
+    .messages = c(
+      "loaded from https://wastedataflow.org/reports/default.aspx",
+      "skip first row",
+      "convert postcodes to upper case",
+      "starts with {.count} items")
+  ) %>%
+  status(
+    .messages = "filter by FacilityType == Incineration with/out energy recovery"
+  ) %>%
+  filter(FacilityType == "Incineration with energy recovery" | FacilityType == "Incineration without energy recovery") %>%
+  status(
+    .messages = "now what?"
+  )
+
+#check the results - should only be two categories
+table(df_filtered$FacilityType)
+```
+
+Let's see the flowchart so far.
+
+```{r show as flowchart}
+df_filtered %>% flowchart()
+```
+
+## Group by postcode
+
+
+```{r group by postcode}
+df_grouped <- df %>% 
+  track(
+    .headline = "WasteDataFlow:",
+    .messages = c(
+      "loaded from https://wastedataflow.org/reports/default.aspx",
+      "skip first row",
+      "convert postcodes to upper case",
+      "starts with {.count} items")
+  ) %>%
+  status(
+    .messages = "filter by FacilityType == Incineration with/out energy recovery"
+  ) %>%
+  filter(FacilityType == "Incineration with energy recovery" | FacilityType == "Incineration without energy recovery") %>%
+  status(
+    .messages = c("Grouped by postcode") #used a vector here as had 2 strings before
+  ) %>%
+  status(
+    .messages = "Summarised by sum of TotalTonnes"
+  ) %>%
+  group_by(FacilityPostCode) %>%
+  summarise(tonnesSUM = sum(TotalTonnes)
+            ) %>%
+  status(
+    .messages = "Remove spaces from postcodes"
+  ) %>%
+  mutate(Postcode = str_remove_all(FacilityPostCode, "\\s"))
+
+#show flowchart
+df_grouped %>% flowchart()
+```
+
+
+## Fetch deprivation for each postcode
+
+Postcode to LSOA lookup for 2011 is downloaded from https://geoportal.statistics.gov.uk/datasets/730eab4ed76b4681ba74317f7e1f1405/about 
+
+Indices of multiple deprivation is https://www.gov.uk/government/statistics/english-indices-of-deprivation-2019 
+
+```{r import lsoa lookup and imd data}
+lookupcsv = "Postcode_to_Output_Area_to_Lower_Layer_Super_Output_Area_to_Middle_Layer_Super_Output_Area_to_Local_Authority_District_November_2018_Lookup_in_the_UK.csv"
+lookupdf <- read_csv(lookupcsv)
+
+imdxls = "File_1_-_IMD2019_Index_of_Multiple_Deprivation.xlsx"
+imd_df <- read_excel(imdxls,
+                     sheet = 2)
+```
+
+
+### Remove spaces from postcodes in each
+
+Some postcodes only match once spaces are removed
+
+```{r remove spaces from postcodes}
+#replace spaces and create a new column in the incinerator df
+df_grouped$postcode_nospace <- stringr::str_replace_all(df_grouped$FacilityPostCode, " ", "")
+#replace spaces and create a new column in the lookup df
+lookupdf$postcode_nospace <- stringr::str_replace_all(lookupdf$pcd7, " ","")
+```
+## Join with LSOA lookup
+
+
+```{r left join lsoa}
+
+df_joined <- left_join(df_grouped, 
+                       lookupdf, 
+                       by = "postcode_nospace")
+```
+
+```{r select cols}
+df_select <- df_joined %>%
+  select(colnames(df_joined)[c(1:4,12,15)])
+
+df_select
+
+```
+
+```{r left join IMD}
+#create a duplicate column with the same name
+imd_df$lsoa11cd <- imd_df$`LSOA code (2011)`
+
+df_joined_imd <- left_join(df_select, 
+                       imd_df, 
+                       by = "lsoa11cd")
+
+print(colnames(df_joined_imd))
+
+df_joined_imd <- df_joined_imd %>% 
+  select(
+    colnames(df_joined_imd)[c(1:3,6,7,12)]
+  )
+
+df_joined_imd
+```
+
+```{r group by IMD}
+groupby_imd <- df_joined_imd %>%
+  group_by(`Index of Multiple Deprivation (IMD) Decile`) %>%
+  summarise(sum(tonnesSUM))
+
+groupby_imd 
+```
+
+## Export
+
+```{r export CSV}
+write.csv(groupby_imd, "groupby_imd.csv")
+write.csv(df_joined_imd, "df_joined_imd.csv")
+```
+
+
+## Show flow chart
+
+Let's try to add those steps for the flowchart.
+
+```{r for flowchart}
+df_grouped <- df %>% 
+  track(
+    .headline = "WasteDataFlow:",
+    .messages = c(
+      "loaded from https://wastedataflow.org/reports/default.aspx",
+      "skip first row",
+      "convert postcodes to upper case",
+      "starts with {.count} items")
+  ) %>%
+  status(
+    .messages = "filter by FacilityType == Incineration with/out energy recovery"
+  ) %>%
+  filter(FacilityType == "Incineration with energy recovery" | FacilityType == "Incineration without energy recovery") %>%
+  status(
+    .messages = c("Grouped by postcode",
+                  "{.count} postcodes/rows") 
+  ) %>%
+  status(
+    .messages = "Summarised by sum of TotalTonnes"
+  ) %>%
+  status(
+    .messages = "Clean postcodes (remove spaces)"
+  ) %>%
+  status(
+    .messages = "Look up 2011 LSOA for postcode"
+  ) %>%
+  status(
+    .messages = "Look up deprivation decile for LSOA"
+  ) %>%
+  group_by(FacilityPostCode)  %>%
+  status(
+    .messages = "CAN YOU SEE ME 1?"
+  ) %>%
+  summarise(tonnesSUM = sum(TotalTonnes)
+            ) %>%
+  status(
+    .messages = "CAN YOU SEE ME 2?"
+  ) %>%
+  mutate(postcode_nospace = str_remove_all(FacilityPostCode, "\\s")) %>%
+  status(
+    .comment = "CYSM3"
+  ) %>%
+  left_join(lookupdf, 
+                       by = "postcode_nospace") %>% 
+  status(
+    .messages = "CAN YOU SEE ME 4?"
+  ) %>%
+  #make sure imd_df has a column with the same name
+  left_join(imd_df, 
+                       by = "lsoa11cd") %>%
+  status(
+    .messages = "CAN YOU SEE ME 5?"
+  ) %>%
+  group_by(`Index of Multiple Deprivation (IMD) Decile`) %>% ##seems to automatically generate a flow chart element
+  summarise(sum(tonnesSUM))  %>%
+  status(
+    .messages = "Summarised by sum of TotalTonnes"
+  )
+
+#show flowchart
+df_grouped %>% flowchart()
+```
