@@ -4,6 +4,8 @@ In October 2024 we [published analysis revealing](https://www.bbc.co.uk/news/art
 
 Scientists warned it was a “disaster for the climate” - and some called for a ban on new incinerators.
 
+![Incin web screenshot](https://github.com/user-attachments/assets/b7206ad8-e2d2-4990-9da1-a99d7f4a212f)
+
 A [website breaking down the figures for over 200 authorities](https://hospitalbuildings.github.io/site2/index.html) was created to make it easier for reporters to see figures in their area and how those had changed over the period covered, and put it into regional context. A [pack with all the information for reporters can be found here](https://github.com/BBC-Data-Unit/incinerators/blob/main/SDU_The%20rise%20in%20incineration%20across%20the%20UK.pdf)
 
 ## Methodology
