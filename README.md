@@ -64,13 +64,13 @@ In addition, an R notebook was used to [combine incinerator data with data on de
 
 * Sheffield Star: [Pollution concerns over high proportion of waste Sheffield councils send to incinerators](https://www.thestar.co.uk/news/environment/pollution-concerns-over-high-proportion-of-waste-sheffield-council-sends-to-incinerators-4824881)
 
-* White Horse News: [New calls to halt Westbury incinerator as BBC report shows burning waste is dirtier than coal] (https://whitehorsenews.co.uk/new-calls-to-halt-westbury-incinerator-as-bbc-report-shows-waste-burning-is-dirtier-than-coal/)
+* White Horse News: [New calls to halt Westbury incinerator as BBC report shows burning waste is dirtier than coal](https://whitehorsenews.co.uk/new-calls-to-halt-westbury-incinerator-as-bbc-report-shows-waste-burning-is-dirtier-than-coal/)
 
 * Dorset Echo: [Campaigners call for legal action over Portland waste incinerator](https://www.dorsetecho.co.uk/news/24652731.campaigners-legal-action-portland-waste-incinerator/)
 
 * Yorkshire Post: [Yorkshire set to host more incinerators than any other part of the country](https://www.yorkshirepost.co.uk/news/environment/yorkshire-set-to-host-more-incinerators-than-any-other-part-of-the-country-4826138)
 
-* Newark Advertiser: [Rise in incineration of waste faces pollution concerns, as Nottinghamshire County Council send 90,000 tonnes less to landfill] (https://www.newarkadvertiser.co.uk/news/90-000-tonnes-less-waste-going-to-landfill-but-alternative-9387639/)
+* Newark Advertiser: [Rise in incineration of waste faces pollution concerns, as Nottinghamshire County Council send 90,000 tonnes less to landfill](https://www.newarkadvertiser.co.uk/news/90-000-tonnes-less-waste-going-to-landfill-but-alternative-9387639/)
 
 * Plymouth Herald: [Plymouth's incinerator labelled a disaster for the environment](https://www.plymouthherald.co.uk/news/plymouth-news/plymouths-incinerator-labelled-disaster-environment-9634115)
 
