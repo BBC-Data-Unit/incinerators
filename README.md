@@ -50,6 +50,52 @@ In addition, an R notebook was used to [combine incinerator data with data on de
 
 ## Partner usage and other coverage
 
+* On the Wight: [Shift from landfill to incineration on the Isle of Wight prompts scrutiny](https://onthewight.com/shift-from-landfill-to-incineration-on-the-isle-of-wight-prompts-scrutiny/)
+
+* STV: [Waste sent to incinerators increases by more than a fifth in past decade](https://news.stv.tv/north/waste-sent-to-incinerators-increases-by-more-than-fifth-in-past-decade-figures-show)
+
+* Devon Air Radio: [Most of Devon's rubbish now goes up in smoke](https://www.devonairradio.com/news/devon-news/most-of-devons-rubbish-now-goes-up-in-smoke/)
+
+* Daily Echo: [Southampton incinerating 70 per cent household waste](https://www.dailyecho.co.uk/news/24648943.southampton-incinerating-70-per-cent-household-waste/)
+
+* Torbay Weekly: [Most of Devon's rubbish now goes up in smoke](https://www.torbayweekly.co.uk/news/local-news/1629706/most-of-devons-rubbish-now-goes-up-in-smoke.html)
+
+* Ivybridge Today: [Most of Devon's rubbish now goes up in smoke](https://www.ivybridge-today.co.uk/news/most-of-devons-rubbish-now-goes-up-in-smoke-728036)
+
+* Sheffield Star: [Pollution concerns over high proportion of waste Sheffield councils send to incinerators](https://www.thestar.co.uk/news/environment/pollution-concerns-over-high-proportion-of-waste-sheffield-council-sends-to-incinerators-4824881)
+
+* White Horse News: [New calls to halt Westbury incinerator as BBC report shows burning waste is dirtier than coal] (https://whitehorsenews.co.uk/new-calls-to-halt-westbury-incinerator-as-bbc-report-shows-waste-burning-is-dirtier-than-coal/)
+
+* Dorset Echo: [Campaigners call for legal action over Portland waste incinerator](https://www.dorsetecho.co.uk/news/24652731.campaigners-legal-action-portland-waste-incinerator/)
+
+* Yorkshire Post: [Yorkshire set to host more incinerators than any other part of the country](https://www.yorkshirepost.co.uk/news/environment/yorkshire-set-to-host-more-incinerators-than-any-other-part-of-the-country-4826138)
+
+* Newark Advertiser: [Rise in incineration of waste faces pollution concerns, as Nottinghamshire County Council send 90,000 tonnes less to landfill] (https://www.newarkadvertiser.co.uk/news/90-000-tonnes-less-waste-going-to-landfill-but-alternative-9387639/)
+
+* Plymouth Herald: [Plymouth's incinerator labelled a disaster for the environment](https://www.plymouthherald.co.uk/news/plymouth-news/plymouths-incinerator-labelled-disaster-environment-9634115)
+
+* South Hams Today: [Most of Devon's rubbish goes up in smoke](https://www.southhams-today.co.uk/news/most-of-devons-rubbish-now-goes-up-in-smoke-728036)
+
+* Inside Croydon: [Health agencies ignore public concerns over incinerator](https://insidecroydon.com/2024/10/15/health-agencies-ignored-publics-concerns-on-incinerator/)
+
+* Banbury FM: [Are energy from waste systems the green way forward?](https://banburyfm.com/news/are-energy-from-waste-systems-the-green-way-forward/)
+
+* Inside Croydon: [Incinerator firm hands out 1m settlement to polluted residents](https://insidecroydon.com/2024/10/16/incinerator-firm-hands-out-1m-settlement-to-polluted-residents/)
+
+* Exeter Today: [Devon recysles mroe than 63,000 tonnes of waste](https://www.exetertoday.co.uk/news/local-news/1630001/devon-recycles-more-than-63-000-tonnes-of-waste.html)
+
+* Hampshire Chronicle: [Hampshire County Council incinerates more than half its waste](https://www.hampshirechronicle.co.uk/news/24653459.hampshire-county-council-incinerates-half-waste/)
+
+* Crediton Courier: [Most of Devon's rubbish goes up in smoke](https://www.creditoncourier.co.uk/news/most-of-devons-rubbish-now-goes-up-in-smoke-new-figures-show-730109)
+
+* Edinburgh Evening News: [Waste burning soars as county neglects recycling policy](https://www.pressreader.com/uk/edinburgh-evening-news/20241021/281767044694692?srsltid=AfmBOoqEXN42EI4MN3gLuZNhKaPBiga0z55lXsfXweWopAxLprKB91vf)
+
+* Liverpool Echo: [It's horrendous living here...](https://www.liverpoolecho.co.uk/news/liverpool-news/its-horrendous-living-here-ive-30178296)
+
+* Cornwall Live: [Plymouth's incinerator labelled a disaster for the environment](https://www.cornwalllive.com/news/local-news/plymouths-incinerator-labelled-disaster-environment-9634115)
+
+* Bicester Advertiser: [Waste incineration in Oxfordshire raises pollution fears](https://www.bicesteradvertiser.net/news/24663073.waste-incineration-oxfordshire-raises-pollution-fears/)
+
 * AOL: [Waste incineration jumps 65% since 2014 - BBC data](https://www.aol.com/waste-incineration-jumps-65-since-192039930.html)
 * ENDS Report: [Waste industry responds to BBC claims that EfW is UK’s ‘dirtiest form of power’](https://www.endsreport.com/article/1892343/waste-industry-responds-bbc-claims-efw-uks-dirtiest-form-power)
 * Sheffield Star: [Pollution concerns over high proportion of waste Sheffield Council sends to incinerators](https://www.thestar.co.uk/news/environment/pollution-concerns-over-high-proportion-of-waste-sheffield-council-sends-to-incinerators-4824881)
