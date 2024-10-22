@@ -52,6 +52,8 @@ In addition, an R notebook was used to [combine incinerator data with data on de
 
 ## Partner usage and other coverage
 
+The story featured across the BBC network including a package and outside broadcase for BBC Breakfast, bulletins across national radio and phone-ins on Five Live and Jeremy Vine on Radio Two. It was also used across a number of regional outlets including BBC London, where it was the lead story.
+   
 * On the Wight: [Shift from landfill to incineration on the Isle of Wight prompts scrutiny](https://onthewight.com/shift-from-landfill-to-incineration-on-the-isle-of-wight-prompts-scrutiny/)
 
 * STV: [Waste sent to incinerators increases by more than a fifth in past decade](https://news.stv.tv/north/waste-sent-to-incinerators-increases-by-more-than-fifth-in-past-decade-figures-show)
