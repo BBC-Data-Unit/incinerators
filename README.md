@@ -52,8 +52,12 @@ In addition, an R notebook was used to [combine incinerator data with data on de
 
 ## Partner usage and other coverage
 
-The story featured across the BBC network including a package and outside broadcase for BBC Breakfast, bulletins across national radio and phone-ins on Five Live and Jeremy Vine on Radio Two. It was also used across a number of regional outlets including BBC London, where it was the lead story.
-   
+The story featured across the BBC network including a package and outside broadcast for BBC Breakfast, bulletins across national radio and phone-ins on Five Live and Jeremy Vine on Radio Two. It was also used across a number of regional outlets including BBC London, where it was the lead story.
+
+https://github.com/user-attachments/assets/0a991eee-5c37-4fa8-a02f-46fdb7c0a7bc
+
+More than 40 partner organisations also used the story pack and data, including: 
+  
 * On the Wight: [Shift from landfill to incineration on the Isle of Wight prompts scrutiny](https://onthewight.com/shift-from-landfill-to-incineration-on-the-isle-of-wight-prompts-scrutiny/)
 
 * STV: [Waste sent to incinerators increases by more than a fifth in past decade](https://news.stv.tv/north/waste-sent-to-incinerators-increases-by-more-than-fifth-in-past-decade-figures-show)
@@ -100,7 +104,5 @@ The story featured across the BBC network including a package and outside broadc
 
 * Bicester Advertiser: [Waste incineration in Oxfordshire raises pollution fears](https://www.bicesteradvertiser.net/news/24663073.waste-incineration-oxfordshire-raises-pollution-fears/)
 
-* AOL: [Waste incineration jumps 65% since 2014 - BBC data](https://www.aol.com/waste-incineration-jumps-65-since-192039930.html)
-* ENDS Report: [Waste industry responds to BBC claims that EfW is UK’s ‘dirtiest form of power’](https://www.endsreport.com/article/1892343/waste-industry-responds-bbc-claims-efw-uks-dirtiest-form-power)
 * Sheffield Star: [Pollution concerns over high proportion of waste Sheffield Council sends to incinerators](https://www.thestar.co.uk/news/environment/pollution-concerns-over-high-proportion-of-waste-sheffield-council-sends-to-incinerators-4824881)
 
